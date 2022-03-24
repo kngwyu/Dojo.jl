@@ -149,12 +149,6 @@ include(joinpath("gradients", "state.jl"))
 include(joinpath("gradients", "data.jl"))
 include(joinpath("gradients", "utilities.jl"))
 
-# Environments
-include(joinpath("..", "environments", "mechanisms.jl"))
-include(joinpath("..", "environments", "environment.jl"))
-include(joinpath("..", "environments", "dynamics.jl"))
-include(joinpath("..", "environments", "utilities.jl"))
-include(joinpath("..", "environments", "include.jl"))
 
 # Bodies
 export
@@ -256,24 +250,6 @@ export
     simulate!,
     step!,
     generate_storage
-
-# Environment
-export
-    Environment,
-    dynamics,
-    dynamics_jacobian_state,
-    dynamics_jacobian_input,
-    get_environment,
-    #step,
-    get_observation,
-    cost,
-    is_done,
-    #reset,
-    render,
-    seed,
-    close,
-    Space,
-    BoxSpace
 
 # Orientation
 export
