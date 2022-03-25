@@ -185,8 +185,10 @@ export
     Spherical,
     CylindricalFree,
     PlanarFree,
+    Prototype,
     get_joint,
-    nullspace_mask
+    nullspace_mask,
+    add_limits
 
 # Contacts
 export
@@ -218,10 +220,10 @@ export
 # Mechanism
 export
     Mechanism,
-    get_mechanism,
     initialize!,
     set_floating_base,
-    zero_velocity!
+    zero_velocity!,
+    build_robot
 
 # Maximal
 export
@@ -236,6 +238,7 @@ export
     set_minimal_state!,
     set_minimal_coordinates!,
     set_minimal_velocities!,
+    set_minimal_coordinates_velocities!,
     get_minimal_state,
     minimal_coordinates,
     minimal_velocities,
@@ -255,7 +258,8 @@ export
 # Orientation
 export
     Quaternion,
-    attitude_jacobian
+    attitude_jacobian,
+    vector_rotate
 
 # Data
 export

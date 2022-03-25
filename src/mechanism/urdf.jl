@@ -107,7 +107,7 @@ function parse_xmaterial(xmaterial, materialdict, T)
 end
 
 # function parse_shape(xvisual, materialdict, T, xb, qb)
-function parse_shape(xvisual, materialdict, T)
+function parse_shape(xvisual, materialdict, T, global_path)
 
     if xvisual === nothing
         shape = nothing
@@ -133,13 +133,13 @@ function parse_shape(xvisual, materialdict, T)
             end
 
             shapenode = shapenodes[1]
-            shape = get_shape(shapenode, x, q, color, T)
+            shape = get_shape(shapenode, x, q, color, T, global_path)
         end
     end
     return shape
 end
 
-function get_shape(shapenode, x, q, color, T)
+function get_shape(shapenode, x, q, color, T, global_path)
     if name(shapenode) == "box"
         xyz = parse_vector(shapenode, "size", T, default = "1 1 1")
         shape = Box(xyz..., zero(T), color = color, position_offset = x, axis_offset = q)
@@ -155,7 +155,7 @@ function get_shape(shapenode, x, q, color, T)
         r = parse_scalar(shapenode, "radius", T, default = "0.5")
         shape = Sphere(r, zero(T), color = color, position_offset = x, axis_offset = q)
     elseif name(shapenode) == "mesh"
-        path = attribute(shapenode, "filename")
+        path = joinpath(global_path, attribute(shapenode, "filename"))
         scale = parse_vector(shapenode, "scale", T, default = "1 1 1")
         shape = Mesh(path, zero(T), zeros(T, 3, 3), scale=scale, color = color, position_offset = x, axis_offset = q)
     elseif name(shapenode) == "capsule"
@@ -168,10 +168,10 @@ function get_shape(shapenode, x, q, color, T)
     end
 end
 
-function parse_link(xlink, materialdict, T)
+function parse_link(xlink, materialdict, T, global_path)
     x, q, m, J = parse_inertia(find_element(xlink, "inertial"), T)
     xvisuals = get_elements_by_tagname(xlink, "visual")
-    shapes = [parse_shape(xvisual, materialdict, T) for xvisual in xvisuals]
+    shapes = [parse_shape(xvisual, materialdict, T, global_path) for xvisual in xvisuals]
     # shapes = [parse_shape(xvisual, materialdict, T, x, q) for xvisual in xvisuals]
     if length(shapes) == 0
         shape = nothing
@@ -199,11 +199,11 @@ function parse_link(xlink, materialdict, T)
     return link
 end
 
-function parse_links(xlinks, materialdict, T)
+function parse_links(xlinks, materialdict, T, global_path)
     ldict = Dict{Symbol,Body{T}}()
 
     for xlink in xlinks
-        link = parse_link(xlink, materialdict, T)
+        link = parse_link(xlink, materialdict, T, global_path)
         ldict[link.name] = link
     end
 
@@ -392,7 +392,9 @@ function parse_loop_joints(xloopjoints, origin, joints, ldict, T)
     return joints, loopjoints
 end
 
-function parse_urdf(filename, floating, ::Type{T}) where T
+function parse_urdf(filename, floating, ::Type{T}, paths_relative_to_urdf) where T
+    paths_relative_to_urdf ? global_path = dirname(filename) : global_path = pwd()
+
     xdoc = LightXML.parse_file(filename)
     xroot = LightXML.root(xdoc)
     @assert LightXML.name(xroot) == "robot"
@@ -402,7 +404,7 @@ function parse_urdf(filename, floating, ::Type{T}) where T
     xloopjoints = get_elements_by_tagname(xroot, "loop_joint")
 
     materialdict = parse_robotmaterials(xroot, T)
-    ldict = parse_links(xlinks, materialdict, T)
+    ldict = parse_links(xlinks, materialdict, T, global_path)
     origin, links, joints = parse_joints(xjoints, ldict, floating, T)
 
     joints, loopjoints = parse_loop_joints(xloopjoints, origin, joints, ldict, T)

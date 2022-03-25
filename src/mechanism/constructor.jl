@@ -89,10 +89,11 @@ Mechanism(origin::Origin{T}, bodies::Vector{Body{T}}, joints::Vector{<:JointCons
 
 function Mechanism(filename::String, 
     floating::Bool=false, 
-    T=Float64; 
+    T=Float64;
+    paths_relative_to_urdf=false, # if false, paths in the URDF are relative to the working directory, otherwise paths are relative to the URDF path (true only needed for tests?)  
     kwargs...)
     # parse urdf
-    origin, links, joints, loopjoints = parse_urdf(filename, floating, T)
+    origin, links, joints, loopjoints = parse_urdf(filename, floating, T, paths_relative_to_urdf)
 
     # create mechanism
     mechanism = Mechanism(origin, links, [joints; loopjoints]; kwargs...)

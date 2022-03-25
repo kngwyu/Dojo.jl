@@ -23,7 +23,7 @@ mechanisms = [
 ]
 
 for name in mechanisms 
-    mech = get_mechanism(name) 
+    mech = DojoEnvironments.get_mechanism(name) 
     initialize!(mech, name)
     @test true
 end

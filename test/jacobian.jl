@@ -10,7 +10,7 @@ function test_solmat(model;
 
     @testset "$(string(model))" begin
         # mechanism
-        mechanism = get_mechanism(model,
+        mechanism = DojoEnvironments.get_mechanism(model,
             timestep=timestep,
             gravity=gravity;
             kwargs...)

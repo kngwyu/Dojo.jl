@@ -3,7 +3,7 @@ using Dojo
 ###############################
 ### Example benchmark for Atlas
 ###############################
-mech = get_mechanism(:atlas, 
+mech = DojoEnvironments.get_mechanism(:atlas, 
     timestep=0.1, 
     gravity=-9.81, 
     friction_coefficient=0.5, 
@@ -23,7 +23,7 @@ SUITE["atlas"] = @benchmarkable simulate!($mech, 2.5, opts=SolverOptions(rtol=1.
 ###############################
 ### Example benchmark for Pendulum
 ###############################
-mechanism = get_mechanism(:pendulum,
+mechanism = DojoEnvironments.get_mechanism(:pendulum,
     timestep=0.01,
     gravity=-9.81,
     damper=5.0,
